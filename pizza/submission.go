@@ -5,6 +5,7 @@ import (
     "fmt"
     "os"
     "strings"
+    "strconv"
 )
 
 const EXAMPLE = "a_example.in"
@@ -17,7 +18,7 @@ func check(e error) {
 }
 
 
-func parseDataset(filePath string) (maxNumber []string, numberPizzas []string) {
+func parseDataset(filePath string) (maxNumber []string, sizePizzas []string) {
 
     // open fd
     fileDescriptor, err := os.Open(filePath)
@@ -32,18 +33,28 @@ func parseDataset(filePath string) (maxNumber []string, numberPizzas []string) {
 
     // number of different pizzas
     line2, _, _ := buffer.ReadLine()
-    numberPizzas = strings.Split(string(line2), " ")
+    sizePizzas = strings.Split(string(line2), " ")
 
     // close file
     fileDescriptor.Close()
 
-    return maxNumber, numberPizzas
+    return maxNumber, sizePizzas
 }
 
 func main() {
-    a, b := parseDataset(EXAMPLE)
-    fmt.Println(a)
-    fmt.Println(b)
+    total, sizesPizza:= parseDataset(EXAMPLE)
 
+    // total slices and types
+    totalSlices, _ := strconv.Atoi(total[0])
+    types, _ := strconv.Atoi(total[1])
+
+    // convert string list to int
+    var sizes = make([]int,types)
+
+    for index, element := range sizesPizza {
+        sizes[index], _ = strconv.Atoi(element)
+    }
+    fmt.Println("Max slices", totalSlices)
+    fmt.Println("Sizes", sizes)
 }
 
