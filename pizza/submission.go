@@ -25,13 +25,14 @@ func parseDataset(filePath string) (maxNumber []string, sizePizzas []string) {
     check(err)
 
     // create buffer for read lines
-    buffer := bufio.NewReader(fileDescriptor)
+    buffer := bufio.NewReaderSize(fileDescriptor, 1024 * 10)
 
     // split string and get max number 
     line, _, _ := buffer.ReadLine()
     maxNumber = strings.Split(string(line), " ")
 
     // number of different pizzas
+    buffer.Reset()
     line2, _, _ := buffer.ReadLine()
     sizePizzas = strings.Split(string(line2), " ")
 
@@ -42,19 +43,28 @@ func parseDataset(filePath string) (maxNumber []string, sizePizzas []string) {
 }
 
 func main() {
-    total, sizesPizza:= parseDataset(EXAMPLE)
+    total, sizesPizza:= parseDataset(os.Args[1])
 
     // total slices and types
     totalSlices, _ := strconv.Atoi(total[0])
     types, _ := strconv.Atoi(total[1])
 
     // convert string list to int
-    var sizes = make([]int,types)
+    var sizes []int
 
-    for index, element := range sizesPizza {
-        sizes[index], _ = strconv.Atoi(element)
+    sum := 0
+    index := 0
+    item := 0
+    for index = types -1; index >= 0; index-- {
+        item, _ = strconv.Atoi(sizesPizza[index])
+	if (item <= (totalSlices - sum) ) {
+            sum = sum + item
+	    sizes = append(sizes, index)
+        }
     }
+    fmt.Println("Sizes readed", len(sizes))
+    fmt.Println("Sizes length", types)
     fmt.Println("Max slices", totalSlices)
-    fmt.Println("Sizes", sizes)
+    fmt.Println("Sum", sum)
 }
 
