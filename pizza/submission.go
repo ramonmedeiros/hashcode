@@ -55,21 +55,26 @@ func saveAnswer(array []int, filename string) {
 	fmt.Println("File saved at", saveFile)
 }
 
-func main() {
-	totalSlices, types, sizesPizza := parseDataset(os.Args[1])
-
+func sumUntilLimit(array []int, size int, limit int) []int {
 	var sizes []int
 	var index, item int
-	
+
 	sum := 0
-	for index = types - 1; index >= 0; index-- {
-		item = sizesPizza[index]
-		if item <= (totalSlices - sum) {
+	for index = size - 1; index >= 0; index-- {
+		item = array[index]
+		if item <= (limit - sum) {
 			sum = sum + item
 			sizes = append(sizes, index)
 		}
 	}
-	fmt.Println("Max Slices:", totalSlices)
 	fmt.Println("Sum:", sum)
+	return sizes
+
+}
+
+func main() {
+	totalSlices, types, sizesPizza := parseDataset(os.Args[1])
+	fmt.Println("Max Slices:", totalSlices)
+	sizes := sumUntilLimit(sizesPizza, types, totalSlices)
 	saveAnswer(sizes, os.Args[1])
 }
