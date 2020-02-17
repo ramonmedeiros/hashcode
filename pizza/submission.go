@@ -8,9 +8,6 @@ import (
 	"strings"
 )
 
-const EXAMPLE = "a_example.in"
-const SMALL = "b_small.in"
-
 func check(e error) {
 	if e != nil {
 		panic(e)
