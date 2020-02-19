@@ -19,7 +19,7 @@ func (s *stackType) Push(v int) {
 	*s = append(*s, v)
 }
 
-func (s *stackType) Pop() (int) {
+func (s *stackType) Pop() int {
 	// FIXME: What do we do if the stack is empty, though?
 	l := len(*s)
 	ret := (*s)[l-1]
@@ -29,7 +29,8 @@ func (s *stackType) Pop() (int) {
 
 func check(e error) {
 	if e != nil {
-		panic(e)
+		fmt.Println("Error while processing file: ", e)
+		os.Exit(1)
 	}
 }
 
@@ -73,7 +74,7 @@ func saveAnswer(array []int, filename string) {
 
 func Solve(begin int, array stackType, numbers []int, length int, target int, sum int) stackType {
 	var i int
-	if (sum > bestSum) {
+	if sum > bestSum {
 		best = array
 		bestSum = sum
 	}
@@ -91,7 +92,7 @@ func Solve(begin int, array stackType, numbers []int, length int, target int, su
 	return best
 }
 
-func generateSubsets(numbers []int, length int, target int) (stackType) {
+func generateSubsets(numbers []int, length int, target int) stackType {
 	var array stackType
 	var sum int = 0
 	stack := Solve(0, array, numbers, length, target, sum)
@@ -104,6 +105,11 @@ func generateSubsets(numbers []int, length int, target int) (stackType) {
 }
 
 func main() {
+	// error if file is not provided
+	if len(os.Args) == 0 {
+		fmt.Println("Specify the input file as argument")
+		os.Exit(1)
+	}
 	totalSlices, length, sizesPizza := parseDataset(os.Args[1])
 	fmt.Println("Max Slices:", totalSlices)
 	sizes := generateSubsets(sizesPizza, length, totalSlices)
