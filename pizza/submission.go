@@ -8,6 +8,23 @@ import (
 	"strings"
 )
 
+// define stacktype
+type stackType []int
+
+// push to list
+func (s *stackType) Push(v int) {
+	*s = append(*s, v)
+}
+
+// pop from list
+func (s *stackType) Pop() int {
+	// FIXME: What do we do if the stack is empty, though?
+	l := len(*s)
+	ret := (*s)[l-1]
+	*s = (*s)[:l-1]
+	return ret
+}
+
 func check(e error) {
 	if e != nil {
 		panic(e)
@@ -52,26 +69,53 @@ func saveAnswer(array []int, filename string) {
 	fmt.Println("File saved at", saveFile)
 }
 
-func sumUntilLimit(array []int, size int, limit int) []int {
-	var sizes []int
-	var index, item int
+func sumUntilLimit(array []int, size int, target int) (stackType, int) {
+	var sizes, bestSizes stackType
+	var index, sum, temp, bestSum int
 
-	sum := 0
-	for index = size - 1; index >= 0; index-- {
-		item = array[index]
-		if item <= (limit - sum) {
-			sum = sum + item
-			sizes = append(sizes, index)
+	sum = 0
+	bestSum = 0
+	for (len(sizes) > 0 && sizes[0] != 0) || len(sizes) == 0 {
+
+		// each new iteration, remove the biggest number
+		size = size - 1
+
+		for index = size; index >= 0; index-- {
+			temp = sum + array[index]
+			if temp <= target {
+				sizes.Push(index)
+				sum = temp
+				if sum == target {
+					return sizes, sum
+				}
+			}
+		}
+
+		// save better solutions until now
+		if sum > bestSum {
+			bestSum = sum
+			bestSizes = sizes
+		}
+
+		// remove the last number to try smaller ones
+		if len(sizes) != 0 {
+			last := sizes.Pop()
+			sum = sum - array[last]
+			size = last
+		}
+
+		// end of numbers to check
+		if len(sizes) == 0 && size == 0 {
+			break
 		}
 	}
-	fmt.Println("Sum:", sum)
-	return sizes
-
+	return bestSizes, bestSum
 }
 
 func main() {
 	totalSlices, types, sizesPizza := parseDataset(os.Args[1])
 	fmt.Println("Max Slices:", totalSlices)
-	sizes := sumUntilLimit(sizesPizza, types, totalSlices)
+	sizes, sum := sumUntilLimit(sizesPizza, types, totalSlices)
+	fmt.Println("Sum:", sum)
 	saveAnswer(sizes, os.Args[1])
 }
