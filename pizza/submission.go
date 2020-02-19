@@ -94,7 +94,11 @@ func sumUntilLimit(array []int, size int, target int) (stackType, int) {
 		// save better solutions until now
 		if sum > bestSum {
 			bestSum = sum
-			bestSizes = sizes
+
+			// HIDDEN MAGIC SPOTTED: cannot copy with copy() or =
+			for _, element := range sizes {
+				bestSizes.Push(element)
+			}
 		}
 
 		// remove the last number to try smaller ones
