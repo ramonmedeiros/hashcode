@@ -27,7 +27,8 @@ func (s *stackType) Pop() int {
 
 func check(e error) {
 	if e != nil {
-		panic(e)
+		fmt.Println("Error with file",e)
+		os.Exit(1)
 	}
 }
 
@@ -71,7 +72,7 @@ func saveAnswer(array []int, filename string) {
 
 func sumUntilLimit(array []int, size int, target int) (stackType, int) {
 	var sizes, bestSizes stackType
-	var index, sum, temp, bestSum int
+	var sum, temp, bestSum int
 
 	sum = 0
 	bestSum = 0
@@ -80,11 +81,16 @@ func sumUntilLimit(array []int, size int, target int) (stackType, int) {
 		// each new iteration, remove the biggest number
 		size = size - 1
 
-		for index = size; index >= 0; index-- {
+		// sum until target is reached/get close
+		for index := size; index >= 0; index-- {
 			temp = sum + array[index]
+
+			// target not reached: keep summing
 			if temp <= target {
 				sizes.Push(index)
 				sum = temp
+
+				// on target: return
 				if sum == target {
 					return sizes, sum
 				}
@@ -117,9 +123,18 @@ func sumUntilLimit(array []int, size int, target int) (stackType, int) {
 }
 
 func main() {
+	// log error when file is not passed
+	if len(os.Args) < 2{
+		fmt.Println("Specify the dataset file as argument")
+		os.Exit(1)
+	}
+
+	// parse and calculate
 	totalSlices, types, sizesPizza := parseDataset(os.Args[1])
-	fmt.Println("Max Slices:", totalSlices)
 	sizes, sum := sumUntilLimit(sizesPizza, types, totalSlices)
+
+	// output general info
+	fmt.Println("Max Slices:", totalSlices)
 	fmt.Println("Sum:", sum)
 	saveAnswer(sizes, os.Args[1])
 }
